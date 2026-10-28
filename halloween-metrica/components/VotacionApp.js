@@ -5,8 +5,8 @@ import Escena, { Marca } from './Escena';
 import Cuenta from './Cuenta';
 import { Arana, Calabaza, Telarana } from './Dibujos';
 import {
-  AREAS, PERSONAS, POR_ID, APERTURA_ISO, APERTURA_TEXTO, DOMINIOS,
-  correoValido, normalizar, otrasAreas, nombreArea,
+  AREAS, PERSONAS, POR_ID, APERTURA_ISO, APERTURA_TEXTO,
+  normalizar, otrasAreas, nombreArea,
 } from '@/lib/config';
 
 const LS = 'hw26-voto';
@@ -67,8 +67,6 @@ export default function VotacionApp() {
   const [paso, setPaso] = useState('registro');
   const [area, setArea] = useState(null);
   const [yo, setYo] = useState(null);
-  const [correo, setCorreo] = useState('');
-  const [tocoCorreo, setTocoCorreo] = useState(false);
   const [votos, setVotos] = useState({});
   const [confirmar, setConfirmar] = useState(false);
   const [enviando, setEnviando] = useState(false);
@@ -101,7 +99,6 @@ export default function VotacionApp() {
   }, [paso]);
 
   const ya = estado?.yaVotaron ?? [];
-  const correoOk = correoValido(correo);
   const otras = area ? otrasAreas(area) : [];
   const completos = otras.every((a) => votos[a.id]);
 
@@ -112,7 +109,7 @@ export default function VotacionApp() {
       const r = await fetch('/api/votar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ votante: yo, correo, votos }),
+        body: JSON.stringify({ votante: yo, votos }),
       });
       const j = await r.json();
       if (!r.ok) throw new Error(j.error);
@@ -174,9 +171,9 @@ export default function VotacionApp() {
   } else if (paso === 'registro') {
     contenido = (
       <>
-        <h2>¿Quién eres?</h2>
+        <h2>¿Desde dónde votas?</h2>
         <p className="nota">Elige tu área y tu nombre. Solo se vota una vez.</p>
-        <div className="areas" role="radiogroup" aria-label="Tu área">
+        <div className="areas" role="radiogroup" aria-label="Área desde la que votas">
           {AREAS.map((a) => (
             <button
               key={a.id}
@@ -202,28 +199,8 @@ export default function VotacionApp() {
             />
           </div>
         )}
-        {yo && (
-          <div className="bloque">
-            <label className="campo">
-              <span>Tu correo de Métrica</span>
-              <input
-                type="email"
-                inputMode="email"
-                autoComplete="email"
-                autoCapitalize="none"
-                placeholder={`nombre@${DOMINIOS[0]}`}
-                value={correo}
-                onChange={(e) => setCorreo(e.target.value)}
-                onBlur={() => setTocoCorreo(true)}
-              />
-              {tocoCorreo && correo && !correoOk && (
-                <em className="error-campo">Usa tu correo @{DOMINIOS.join(' o @')}.</em>
-              )}
-            </label>
-          </div>
-        )}
         <div className="barra">
-          <button className="btn btn-full" disabled={!yo || !correoOk} onClick={() => setPaso('votar')}>
+          <button className="btn btn-full" disabled={!yo} onClick={() => setPaso('votar')}>
             Continuar a votar
           </button>
         </div>

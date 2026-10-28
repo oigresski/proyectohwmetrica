@@ -1,4 +1,4 @@
-import { POR_ID, correoValido, faseDe, otrasAreas, DOMINIOS } from '@/lib/config';
+import { POR_ID, faseDe, otrasAreas } from '@/lib/config';
 import { leerModo, registrarVoto } from '@/lib/store';
 import { json, manejar } from '@/lib/api';
 
@@ -13,10 +13,6 @@ export function POST(req) {
 
     const yo = POR_ID[body.votante];
     if (!yo) return json({ error: 'Elige tu nombre de la lista.' }, 400);
-    const correo = String(body.correo || '').trim().toLowerCase();
-    if (!correoValido(correo)) {
-      return json({ error: `Usa tu correo de Métrica (@${DOMINIOS.join(' o @')}).` }, 400);
-    }
 
     const votos = {};
     for (const area of otrasAreas(yo.area)) {
@@ -27,12 +23,10 @@ export function POST(req) {
 
     const r = await registrarVoto({
       votante: yo.id,
-      correo,
       votos,
-      registro: { area: yo.area, correo, votos, en: new Date().toISOString() },
+      registro: { area: yo.area, votos, en: new Date().toISOString() },
     });
     if (r === 'NOMBRE') return json({ error: `${yo.nombre} ya votó. Si no fuiste tú, avísale a quien organiza.` }, 409);
-    if (r === 'CORREO') return json({ error: 'Ese correo ya se usó para votar.' }, 409);
     return json({ ok: true });
   });
 }

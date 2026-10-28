@@ -9,18 +9,16 @@ const enMemoria = !hayBase && process.env.NODE_ENV !== 'production' || process.e
 
 const K = {
   votantes: 'hw26:votantes', // hash: id del votante → JSON del voto
-  correos: 'hw26:correos', //   hash: correo → id del votante
+  correos: 'hw26:correos', //   (ya no se usa; se mantiene para que «Borrar votos» limpie datos antiguos)
   modo: 'hw26:modo', //         auto | abierta | cerrada
   conteo: (a) => `hw26:conteo:${a}`, // hash: id del candidato → votos
 };
 
 const LUA = `
 if redis.call('HEXISTS', KEYS[1], ARGV[1]) == 1 then return 'NOMBRE' end
-if redis.call('HEXISTS', KEYS[2], ARGV[2]) == 1 then return 'CORREO' end
-redis.call('HSET', KEYS[1], ARGV[1], ARGV[3])
-redis.call('HSET', KEYS[2], ARGV[2], ARGV[1])
+redis.call('HSET', KEYS[1], ARGV[1], ARGV[2])
+redis.call('HINCRBY', KEYS[2], ARGV[3], 1)
 redis.call('HINCRBY', KEYS[3], ARGV[4], 1)
-redis.call('HINCRBY', KEYS[4], ARGV[5], 1)
 return 'OK'`;
 
 export class SinBase extends Error {}
@@ -68,19 +66,17 @@ export async function votantes() {
   return Object.fromEntries(Object.entries(o).map(([k, v]) => [k, JSON.parse(v)]));
 }
 
-// Devuelve 'OK', 'NOMBRE' (esa persona ya votó) o 'CORREO' (ese correo ya votó)
-export async function registrarVoto({ votante, correo, registro, votos }) {
+// Devuelve 'OK' o 'NOMBRE' (esa persona ya votó)
+export async function registrarVoto({ votante, registro, votos }) {
   const [a, b] = Object.entries(votos);
   if (enMemoria) {
     if (mem.votantes.has(votante)) return 'NOMBRE';
-    if (mem.correos.has(correo)) return 'CORREO';
     mem.votantes.set(votante, JSON.stringify(registro));
-    mem.correos.set(correo, votante);
     for (const [area, cand] of [a, b]) mem.conteo[area].set(cand, (mem.conteo[area].get(cand) || 0) + 1);
     return 'OK';
   }
-  return cmd(['EVAL', LUA, '4', K.votantes, K.correos, K.conteo(a[0]), K.conteo(b[0]),
-    votante, correo, JSON.stringify(registro), a[1], b[1]]);
+  return cmd(['EVAL', LUA, '3', K.votantes, K.conteo(a[0]), K.conteo(b[0]),
+    votante, JSON.stringify(registro), a[1], b[1]]);
 }
 
 export async function conteos() {

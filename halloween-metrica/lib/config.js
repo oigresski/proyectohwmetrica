@@ -6,9 +6,6 @@ export const APERTURA_ISO = '2026-10-29T11:00:00-05:00';
 export const CIERRE_ISO = '2026-10-29T23:59:00-05:00';
 export const APERTURA_TEXTO = 'jueves 29 a las 11:00 a. m.';
 
-// Solo se aceptan correos de estos dominios.
-export const DOMINIOS = ['metrica.pe', 'metricaperu.com'];
-
 export const AREAS = [
   { id: 'pr', nombre: 'Relaciones Públicas' },
   { id: 'digital', nombre: 'Digital' },
@@ -53,11 +50,6 @@ export const PERSONAS = Object.fromEntries(
 export const POR_ID = Object.fromEntries(Object.values(PERSONAS).flat().map((p) => [p.id, p]));
 export const otrasAreas = (area) => AREAS.filter((a) => a.id !== area);
 export const nombreArea = (id) => AREAS.find((a) => a.id === id)?.nombre ?? id;
-
-export function correoValido(correo) {
-  const m = /^[a-z0-9._%+-]+@([a-z0-9.-]+)$/i.exec((correo || '').trim());
-  return !!m && DOMINIOS.includes(m[1].toLowerCase());
-}
 
 export function faseDe(modo, ahora = Date.now()) {
   if (modo === 'cerrada' || ahora >= Date.parse(CIERRE_ISO)) return 'cerrada';

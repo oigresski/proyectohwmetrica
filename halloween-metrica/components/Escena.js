@@ -11,7 +11,7 @@ export function Marca({ chica = false }) {
   return (
     <div className={`marca${chica ? ' marca-chica' : ''}`} aria-label="Métrica">
       <Gorro className="marca-gorro" />
-      <span className="marca-texto">métrica</span>
+      <img className="marca-logo" src="/logo-metrica.png" alt="Métrica" width="697" height="214" />
     </div>
   );
 }

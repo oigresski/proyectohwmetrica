@@ -1,6 +1,6 @@
 # Concurso de disfraces · Halloween 2026 · Métrica
 
-App de votación: cada persona elige su área y su nombre, pone su correo de Métrica y vota por el mejor disfraz de las otras dos áreas. Solo se vota una vez. Los ganadores se revelan al cierre.
+App de votación: cada persona elige desde qué área vota y su nombre, y vota por el mejor disfraz de las otras dos áreas. Solo se vota una vez. Los ganadores se revelan al cierre.
 
 - **Votación:** `/`
 - **Ganadores:** `/resultados` (bloqueada hasta el cierre; ideal para proyectar)
@@ -33,11 +33,10 @@ Ojo: en el navegador donde votaste quedará la pantalla de «Voto enviado». Par
 ## Cómo se evita el voto doble
 
 - Cada nombre vota una sola vez: después aparece como «ya votó» y no se puede elegir.
-- Cada correo vota una sola vez, y solo se aceptan `@metrica.pe` y `@metricaperu.com`.
 - La base registra el voto en un solo paso, así que dos personas no pueden votar con el mismo nombre al mismo tiempo.
 
 Si alguien dice «yo no voté y aparezco como que ya voté», la app no permite anular un voto suelto: decide tú cómo manejarlo al anunciar.
 
 ## Cambiar algo
 
-Todo lo editable está en `lib/config.js`: horarios, dominios de correo, áreas y la lista de nombres. Después de editar en GitHub, Vercel publica solo.
+Todo lo editable está en `lib/config.js`: horarios, áreas y la lista de nombres. Después de editar en GitHub, Vercel publica solo.
