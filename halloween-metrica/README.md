@@ -26,9 +26,18 @@ Ojo: en el navegador donde votaste quedará la pantalla de «Voto enviado». Par
 ## El día del concurso
 
 - Abre sola a las **11:00 a. m. del jueves 29**.
-- Cuando decidas terminar: `/admin` → **Cerrar votación y revelar ganadores**. Si nadie la cierra, se cierra sola a las **11:59 p. m.**
-- En `/admin` ves cuántos votaron por área y quién falta.
-- En `/resultados` cada tarjeta se voltea al tocarla, para revelar los ganadores uno por uno.
+- En `/admin` ves cuántos votaron por área, quién falta y **los resultados en vivo (solo tú los ves)**.
+- Cuando decidas terminar: `/admin` → **1. Cerrar votación**. Esto NO muestra los ganadores todavía. Si nadie la cierra, se cierra sola a las **11:59 p. m.** (y tampoco muestra ganadores).
+- Si hay **empate** en un área, el admin lo marca en naranja: toca el nombre del ganador. Hasta que no elijas, no se puede revelar.
+- `/admin` → **2. Revelar ganadores en la pantalla**. Recién ahí `/resultados` muestra los carteles.
+
+### La pantalla de ganadores (para proyectar)
+
+- Abre `/resultados` en la laptop conectada al proyector **antes** de revelar: muestra «Los ganadores se revelan en unos minutos» y se activa sola cuando revelas desde el admin (puedes hacerlo desde tu celular).
+- Botón **Pantalla completa** y botón de **música de misterio** (suave, de fondo).
+- Cada área es un cartel de «SE BUSCA». Clic en un cartel (o barra espaciadora para el siguiente): redoble de tambor, platillo y aparece el ganador.
+- Sube el volumen de la laptop: el sonido sale del navegador, no hay archivos de audio.
+- Si te equivocaste, en `/admin` → **Ocultar ganadores otra vez**.
 
 ## Cómo se evita el voto doble
 

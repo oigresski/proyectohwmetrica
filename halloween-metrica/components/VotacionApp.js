@@ -150,8 +150,14 @@ export default function VotacionApp() {
       <div className="centro">
         <Calabaza className="cal-grande" />
         <h2>La votación cerró</h2>
-        <p className="nota">Ya se conocen los tres ganadores.</p>
-        <Link className="btn" href="/resultados">Ver ganadores</Link>
+        {estado.revelado ? (
+          <>
+            <p className="nota">Ya se conocen los tres ganadores.</p>
+            <Link className="btn" href="/resultados">Ver ganadores</Link>
+          </>
+        ) : (
+          <p className="nota">Gracias por votar. Los ganadores se revelan en vivo, en la pantalla grande.</p>
+        )}
       </div>
     );
   } else if (previo || paso === 'listo') {

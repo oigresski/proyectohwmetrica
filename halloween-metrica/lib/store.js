@@ -12,6 +12,8 @@ const K = {
   correos: 'hw26:correos', //   (ya no se usa; se mantiene para que «Borrar votos» limpie datos antiguos)
   modo: 'hw26:modo', //         auto | abierta | cerrada
   conteo: (a) => `hw26:conteo:${a}`, // hash: id del candidato → votos
+  revelado: 'hw26:revelado', // '1' cuando el admin muestra los ganadores
+  desempate: 'hw26:desempate', // hash: área → id elegido por el admin si hay empate
 };
 
 const LUA = `
@@ -46,7 +48,7 @@ const aObjeto = (res) => {
 
 // ---------- memoria (solo para probar en local)
 const mem = (globalThis.__hw26 ??= {
-  votantes: new Map(), correos: new Map(), modo: 'auto',
+  votantes: new Map(), correos: new Map(), modo: 'auto', revelado: false, desempate: {},
   conteo: Object.fromEntries(AREAS.map((a) => [a.id, new Map()])),
 });
 
@@ -58,6 +60,26 @@ export async function leerModo() {
 export async function fijarModo(modo) {
   if (enMemoria) { mem.modo = modo; return; }
   await cmd(['SET', K.modo, modo]);
+}
+
+export async function leerRevelado() {
+  if (enMemoria) return !!mem.revelado;
+  return (await cmd(['GET', K.revelado])) === '1';
+}
+
+export async function fijarRevelado(si) {
+  if (enMemoria) { mem.revelado = !!si; return; }
+  await cmd(si ? ['SET', K.revelado, '1'] : ['DEL', K.revelado]);
+}
+
+export async function leerDesempates() {
+  if (enMemoria) return { ...(mem.desempate || {}) };
+  return aObjeto(await cmd(['HGETALL', K.desempate]));
+}
+
+export async function fijarDesempate(area, id) {
+  if (enMemoria) { (mem.desempate ??= {})[area] = id; return; }
+  await cmd(['HSET', K.desempate, area, id]);
 }
 
 export async function votantes() {
@@ -90,9 +112,9 @@ export async function conteos() {
 
 export async function reiniciar() {
   if (enMemoria) {
-    mem.votantes.clear(); mem.correos.clear(); mem.modo = 'auto';
+    mem.votantes.clear(); mem.correos.clear(); mem.modo = 'auto'; mem.revelado = false; mem.desempate = {};
     for (const m of Object.values(mem.conteo)) m.clear();
     return;
   }
-  await cmd(['DEL', K.votantes, K.correos, K.modo, ...AREAS.map((a) => K.conteo(a.id))]);
+  await cmd(['DEL', K.votantes, K.correos, K.modo, K.revelado, K.desempate, ...AREAS.map((a) => K.conteo(a.id))]);
 }
